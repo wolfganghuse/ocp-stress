@@ -1,0 +1,7 @@
+apiVersion: crd.nutanix.com/v1alpha1
+kind: NutanixCsiStorage
+metadata:
+  name: nutanixcsistorage
+  namespace: ntnx-system
+spec:
+  namespace: ntnx-system
