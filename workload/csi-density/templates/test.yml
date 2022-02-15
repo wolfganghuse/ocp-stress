@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fio
+spec:
+  template:
+    metadata:
+      labels:
+        name: fio
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+      containers:
+      - name: fio
+        image: xridge/fio:3.13
+        args: ["--directory=/scratch/${HOSTNAME} --name=randwrite --iodepth=1 --rw=randwrite --bs=4m --size=256M"]
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: fio-data
+          mountPath: /scratch
+        securityContext:
+          privileged: false
+      restartPolicy: Always
+  replicas: 1
+  selector:
+    matchLabels:
+      name: fio
+      volumes:
+      - name: fio-data
+        persistentVolumeClaim:
+          claimName: fio-claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: fio-claim
+spec:
+  storageClassName: nutanix-volume
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
