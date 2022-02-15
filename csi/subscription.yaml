@@ -7,5 +7,5 @@ spec:
   channel: stable
   name: nutanixcsioperator
   installPlanApproval: Automatic
-  source: nutanix-csi-operator-catalog
+  source: certified-operators
   sourceNamespace: openshift-marketplace

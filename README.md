@@ -141,7 +141,13 @@ spec:
 # Setup Workloads
 ## kube-burner
 https://github.com/cloud-bulldozer/kube-burner
+wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.1/kube-burner-0.15.1-Linux-x86_64.tar.gz
+tar xzvf kube-burner-0.15.1-Linux-x86_64.tar.gz
+sudo install kube-burner /usr/bin
 
+export esPassword=
+export promToken=
+kube-burner init -c cluster-density.yml -u https://prometheus-k8s-openshift-monitoring.apps.ocp1.ntnxlab.local -t ${promToken} --step=30s -m metrics.yaml --uuid=0876ff24-081f-57d8-8432-fb83c17dc8a4 --log-level=info
 
 # Setup Workload
 

@@ -1,10 +1,9 @@
-
 global:
   writeToFile: false
   createTarball: false
   indexerConfig:
     enabled: true
-    esServers: [https://elastic:Z6oG0cAm198LaV5P509m7POW@elasticsearch-elastic.apps.ocp1.ntnxlab.local]
+    esServers: [https://elastic:{{ .esPassword }}@elasticsearch-elastic.apps.ocp1.ntnxlab.local]
     insecureSkipVerify: true
     defaultIndex: kube-burner
     type: elastic
