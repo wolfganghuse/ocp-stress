@@ -18,7 +18,7 @@ spec:
       containers:
       - name: fio
         image: xridge/fio:3.13
-        args: ["--filename=/scratch --iodepth=1 --rw=randwrite --bs=4m"]
+        args: ["--filename=/scratch/pvc --iodepth=1 --rw=randwrite --bs=4m"]
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: fio-data
