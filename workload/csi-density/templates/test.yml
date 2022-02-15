@@ -18,30 +18,16 @@ spec:
       containers:
       - name: fio
         image: xridge/fio:3.13
-        args: ["--directory=/scratch/${HOSTNAME} --name=randwrite --iodepth=1 --rw=randwrite --bs=4m --size=256M"]
+        args: ["--filename=/scratch --iodepth=1 --rw=randwrite --bs=4m"]
         imagePullPolicy: IfNotPresent
         volumeMounts:
-        - name: fio-config-vol
-          mountPath: /configs
         - name: fio-data
           mountPath: /scratch
       restartPolicy: Always
       volumes:
-      - name: fio-config-vol
-        configMap:
-          name: fio-job-config
       - name: fio-data
         persistentVolumeClaim:
           claimName: fio-claim
-        image: xridge/fio:3.13
-        args: ["--directory=/scratch/${HOSTNAME} --name=randwrite --iodepth=1 --rw=randwrite --bs=4m --size=256M"]
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-        - name: fio-data
-          mountPath: /scratch
-        securityContext:
-          privileged: false
-      restartPolicy: Always
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
