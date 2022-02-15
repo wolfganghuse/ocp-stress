@@ -140,27 +140,20 @@ spec:
 
 # Setup Workloads
 ## kube-burner
+
+oc new-project benchmark
+oc create sa benchmark
+
+oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark
+
 https://github.com/cloud-bulldozer/kube-burner
 wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.1/kube-burner-0.15.1-Linux-x86_64.tar.gz
 tar xzvf kube-burner-0.15.1-Linux-x86_64.tar.gz
 sudo install kube-burner /usr/bin
 
 export esPassword=
-export promToken=
-kube-burner init -c cluster-density.yml -u https://prometheus-k8s-openshift-monitoring.apps.ocp1.ntnxlab.local -t ${promToken} --step=30s -m metrics.yaml --uuid=0876ff24-081f-57d8-8432-fb83c17dc8a4 --log-level=info
+export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
+export JOB_ITERATIONS=100
+export UUID=$(uuidgen)
 
-# Setup Workload
-
-'''
-git clone https://github.com/cloud-bulldozer/benchmark-operator
-cd benchmark-operator/charts/benchmark-operator
-oc new-project benchmark-operator
-oc adm policy -n benchmark-operator add-scc-to-user privileged -z benchmark-operator
-helm install benchmark-operator .
-'''
-
-Create RBAC-Roles for kube-burner
-'''
-oc create -f https://raw.githubusercontent.com/cloud-bulldozer/benchmark-operator/master/resources/kube-burner-role.yml
-'''
-
+kube-burner init -c cluster-density.yml -u https://prometheus-k8s-openshift-monitoring.apps.ocp2.ntnxlab.local -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
