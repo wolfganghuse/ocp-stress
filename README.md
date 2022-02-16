@@ -2,16 +2,17 @@
 
 ## Why
 Have a deployment for:
+
 a) Data-Collection and Visualisation Backend
 
 b) repeatable Deployment for Workloads
 
 ## How
-RedHat OpenShift 4.9
-ElasticSearch 7.2
-Prometheus
-Grafana 8.0
-kube-burner
+- RedHat OpenShift 4.9
+- ElasticSearch 7.12
+- Prometheus
+- Grafana 8.0
+- kube-burner
 
 # Prepare Environment
 Depending on your needs you can run Logging and Workloads on dedicated or the same Cluster.
