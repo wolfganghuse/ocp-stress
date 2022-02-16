@@ -173,8 +173,9 @@ Only export esPassword when running on separate Cluster, otherwise it is already
 ```
 export esPassword= 
 export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
+export promRoute=$(oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
 export JOB_ITERATIONS=100
 export UUID=$(uuidgen)
 
-kube-burner init -c cluster-density.yml -u https://prometheus-k8s-openshift-monitoring.apps.ocp2.ntnxlab.local -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
+kube-burner init -c cluster-density.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
 ```
