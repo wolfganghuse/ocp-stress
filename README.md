@@ -3,6 +3,7 @@
 ## Why
 Have a deployment for:
 a) Data-Collection and Visualisation Backend
+
 b) repeatable Deployment for Workloads
 
 ## How
@@ -16,14 +17,18 @@ kube-burner
 Depending on your needs you can run Logging and Workloads on dedicated or the same Cluster.
 Openshift Cluster must be fully deployed with at least one Storage Class.
 
-
 # Setup Logging/Visualization Backend
 
-## ElasticSearch
+## Needed Operators
 - Deploy ElasticSearch Operator
+- Deploy Grafana Operator
+
+## ElasticSearch
 ### Deploy ElasticSearch 7.12.1 with Route
-oc new-project elastic
 ```
+oc new-project elastic
+
+cat <<EOF | oc create -f -
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -48,6 +53,7 @@ spec:
   to:
     kind: Service
     name: elasticsearch-es-http
+EOF
 ```
 ### Get elastic User Credential
 ```
@@ -55,13 +61,9 @@ export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o g
 ```
 ## Grafana
 
-
-https://www.redhat.com/en/blog/custom-grafana-dashboards-red-hat-openshift-container-platform-4
-
-
-- Deploy Grafana Operator
 ### Deploy Grafana
 ```
+cat <<EOF | oc create -f -
 apiVersion: integreatly.org/v1alpha1
 kind: Grafana
 metadata:
@@ -78,6 +80,7 @@ spec:
       disable_signout_menu: true
   ingress:
     enabled: true
+EOF
 ```
 
 Grant Grafana access to cluster-monitoring
@@ -144,22 +147,33 @@ EOF
 ```  
 - Deploy Grafana Dashboards (Openshift / Kube-Burner)
 
-# Setup Workloads
-## kube-burner
+## Setup Workloads
+### kube-burner
+You need the latest version from kube-burner on your Workstation:
 
+```
+wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.1/kube-burner-0.15.1-Linux-x86_64.tar.gz
+tar xzvf kube-burner-0.15.1-Linux-x86_64.tar.gz
+sudo install kube-burner /usr/bin
+```
+
+### Prepare Environment
+```
 oc new-project benchmark
 oc create sa benchmark
 
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark
+```
 
-https://github.com/cloud-bulldozer/kube-burner
-wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.1/kube-burner-0.15.1-Linux-x86_64.tar.gz
-tar xzvf kube-burner-0.15.1-Linux-x86_64.tar.gz
-sudo install kube-burner /usr/bin
+## Run Test
 
-export esPassword=
+Only export esPassword when running on separate Cluster, otherwise it is already set
+
+```
+export esPassword= 
 export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
 export JOB_ITERATIONS=100
 export UUID=$(uuidgen)
 
 kube-burner init -c cluster-density.yml -u https://prometheus-k8s-openshift-monitoring.apps.ocp2.ntnxlab.local -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
+```
