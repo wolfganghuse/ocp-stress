@@ -22,6 +22,7 @@ Openshift Cluster must be fully deployed with at least one Storage Class.
 ## ElasticSearch
 - Deploy ElasticSearch Operator
 ### Deploy ElasticSearch 7.12.1 with Route
+oc new-project elastic
 '''
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
@@ -50,7 +51,7 @@ spec:
 '''
 ### Get elastic User Credential
 '''
-oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}'
+export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
 '''
 ## Grafana
 
@@ -88,10 +89,11 @@ oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-servic
 
 Get Service Account Token
 '''
-oc serviceaccounts get-token grafana-serviceaccount -n grafana
+export BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
 '''
 
 '''
+cat <<EOF | oc create -f -
 apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDataSource
 metadata:
@@ -108,16 +110,19 @@ spec:
         tlsSkipVerify: true
       name: Prometheus
       secureJsonData:
-        httpHeaderValue1: 'Bearer {BEARER_TOKEN}'
+        httpHeaderValue1: 'Bearer ${BEARER_TOKEN}'
       type: prometheus
       url: 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9091'
   name: prometheus-grafanadatasource.yaml
+EOF
+
 '''
 
 - Deploy Elastic Datasource
 
 
 '''
+cat <<EOF | oc create -f -
 apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDataSource
 metadata:
@@ -129,12 +134,13 @@ spec:
         tlsSkipVerify: true
       editable: true
       name: kube-burner
-      type: elastic
+      type: elasticsearch
       url: 'https://elasticsearch-elastic.apps.ocp1.ntnxlab.local'
-      basicAuthPassword: {Your elastic cred}
+      basicAuthPassword: ${esPassword}
       basicAuth: true
       basicAuthUser: elastic
   name: elastic-grafanadatasource.yaml
+EOF
 '''  
 - Deploy Grafana Dashboards (Openshift / Kube-Burner)
 
