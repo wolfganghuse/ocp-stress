@@ -23,7 +23,7 @@ Openshift Cluster must be fully deployed with at least one Storage Class.
 - Deploy ElasticSearch Operator
 ### Deploy ElasticSearch 7.12.1 with Route
 oc new-project elastic
-'''
+```
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -48,11 +48,11 @@ spec:
   to:
     kind: Service
     name: elasticsearch-es-http
-'''
+```
 ### Get elastic User Credential
-'''
+```
 export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
-'''
+```
 ## Grafana
 
 
@@ -61,7 +61,7 @@ https://www.redhat.com/en/blog/custom-grafana-dashboards-red-hat-openshift-conta
 
 - Deploy Grafana Operator
 ### Deploy Grafana
-'''
+```
 apiVersion: integreatly.org/v1alpha1
 kind: Grafana
 metadata:
@@ -78,21 +78,21 @@ spec:
       disable_signout_menu: true
   ingress:
     enabled: true
-'''
+```
 
 Grant Grafana access to cluster-monitoring
-'''
+```
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount -n grafana
-'''
+```
 
 - Deploy Prometheus Datasource
 
 Get Service Account Token
-'''
+```
 export BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
-'''
+```
 
-'''
+```
 cat <<EOF | oc create -f -
 apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDataSource
@@ -116,12 +116,12 @@ spec:
   name: prometheus-grafanadatasource.yaml
 EOF
 
-'''
+```
 
 - Deploy Elastic Datasource
 
 
-'''
+```
 cat <<EOF | oc create -f -
 apiVersion: integreatly.org/v1alpha1
 kind: GrafanaDataSource
@@ -141,7 +141,7 @@ spec:
       basicAuthUser: elastic
   name: elastic-grafanadatasource.yaml
 EOF
-'''  
+```  
 - Deploy Grafana Dashboards (Openshift / Kube-Burner)
 
 # Setup Workloads

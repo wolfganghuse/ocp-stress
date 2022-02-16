@@ -5,3 +5,8 @@ metadata:
   namespace: ntnx-system
 spec:
   namespace: ntnx-system
+  tolerations:
+  - key: "node-role.kubernetes.io/infra"
+    operator: "Exists"
+    value: ""
+    effect: "NoSchedule"
