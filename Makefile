@@ -15,5 +15,6 @@ create_benchmark:
 	oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark
 run:
 	export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
-	kube-burner init -c cluster-density.yml -u https://prometheus-k8s-openshift-monitoring.apps.ocp2.ntnxlab.local -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
-
+	export promRoute=$(oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
+	export esRoute=$(oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
+	kube-burner init -c workload/cluster-density/cluster-density.yml -u https://${promRoute} -t ${promToken} --step=30s -m workload/cluster-density/metrics.yaml --uuid=${UUID} --log-level=info
