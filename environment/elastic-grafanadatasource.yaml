@@ -10,8 +10,8 @@ spec:
       editable: true
       name: kube-burner
       type: elasticsearch
-      url: 'https://openshift-monitoring.svc.cluster.local:9200'
-      basicAuthPassword: ${esPassword}
+      url: '${esRoute}'
+      basicAuthPassword: '${esPassword}'
       basicAuth: true
       basicAuthUser: elastic
   name: elastic-grafanadatasource.yaml
