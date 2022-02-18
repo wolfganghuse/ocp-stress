@@ -9,6 +9,7 @@ spec:
         tlsSkipVerify: true
         timeField: timestamp
         esVersion: "7.0.0"
+        maxConcurrentShardRequests: 5
         timeInterval: "10s"
       editable: true
       name: kube-burner
