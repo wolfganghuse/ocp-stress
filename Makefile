@@ -28,5 +28,4 @@ run:
 	promToken=$(shell oc serviceaccounts get-token benchmark -n benchmark)
 	promRoute=$(shell oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
 	esRoute=$(shell oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
-	cd workload/cluster-density/
-	kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
+	cd workload/cluster-density/ && kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
