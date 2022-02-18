@@ -2,6 +2,8 @@ export GRAFANA_PASSWORD=nutanix/4u
 
 
 create_benchmark:
+	oc new-project grafana
+	oc create -f environment/grafana-operator.yaml
 	oc new-project elastic
 	oc create -f environment/elasticsearch.yaml
 	export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
