@@ -22,9 +22,9 @@ configure:
 	@envsubst < environment/grafana.yaml | oc create -f -
 	@sleep 60
 	@echo 'Exporting Variables';\
-	export BEARER_TOKEN="$$(shell oc serviceaccounts get-token grafana-serviceaccount -n grafana)";\
-	export esPassword="$$(shell oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')";\
-	export esRoute="$$(shell oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)";\
+	export BEARER_TOKEN="$$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)";\
+	export esPassword="$$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')";\
+	export esRoute="$$(oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)";\
 	@echo 'Running Commands';\
 	envsubst < environment/prometheus-grafanadatasource.yaml | oc create -f - ;\
 	envsubst < environment/elastic-grafanadatasource.yaml | oc create -f - ;\
