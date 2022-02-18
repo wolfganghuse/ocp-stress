@@ -3,7 +3,7 @@ global:
   createTarball: false
   indexerConfig:
     enabled: true
-    esServers: [https://elastic:{{ .esPassword }}@elasticsearch-elastic.apps.ocp1.ntnxlab.local]
+    esServers: '[https://elastic:{{ .esPassword }}@{{ .esRoute }}]'
     insecureSkipVerify: true
     defaultIndex: kube-burner
     type: elastic
@@ -13,9 +13,9 @@ global:
 
 jobs:
   - name: api-intensive
-    jobIterations: 700
-    qps: 4
-    burst: 4
+    jobIterations: {{ .JOB_ITERATIONS}}
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
     namespacedIterations: true
     namespace: api-intensive
     podWait: false
@@ -35,8 +35,8 @@ jobs:
   - name: api-intensive-patch
     jobType: patch
     jobIterations: 10
-    qps: 2
-    burst: 2
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
     objects:
       - kind: Deployment
         objectTemplate: templates/deployment_patch_add_label.json
@@ -49,14 +49,14 @@ jobs:
         patchType: "application/apply-patch+yaml"
         apiVersion: apps/v1
       - kind: Deployment
-        objectTemplate: templates/deployment_patch_add_pod_3.yaml
+        objectTemplate: templates/deployment_patch_add_label.yaml
         labelSelector: {kube-burner-job: api-intensive}
         patchType: "application/strategic-merge-patch+json"
         apiVersion: apps/v1
 
   - name: api-intensive-remove
-    qps: 2
-    burst: 2
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
     objects:
@@ -65,8 +65,8 @@ jobs:
         apiVersion: apps/v1
 
   - name: ensure-pods-removal
-    qps: 10
-    burst: 10
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
     objects:
@@ -74,8 +74,8 @@ jobs:
         labelSelector: {kube-burner-job: api-intensive}
 
   - name: remove-services
-    qps: 2
-    burst: 2
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
     objects:
@@ -83,8 +83,8 @@ jobs:
         labelSelector: {kube-burner-job: api-intensive}
 
   - name: remove-configmaps-secrets
-    qps: 2
-    burst: 2
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
     jobType: delete
     objects:
       - kind: ConfigMap
