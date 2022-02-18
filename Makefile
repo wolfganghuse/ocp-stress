@@ -33,7 +33,11 @@ create_benchmark:
 	oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark
 run:
 	export promToken=$(shell oc serviceaccounts get-token benchmark -n benchmark)
+	echo $(promToken)
 	export promRoute=$(shell oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
+	echo $(promRoute)
 	export esRoute=$(shell oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
+	echo $(esRoute)
 	export esPassword=$(shell oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
+	echo $(esPassword)
 	cd workload/$(WORKLOAD)/ && kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
