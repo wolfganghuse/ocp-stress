@@ -30,8 +30,11 @@ sudo install kube-burner /usr/bin
 ```
 git clone https://github.com/wolfganghuse/ocp-stress
 cd ocp-stress
+./deploy.sh
 ```
-TDB
+
+```
+```
 
 # Setup Logging/Visualization Backend
 
