@@ -1,3 +1,5 @@
+.EXPORT_ALL_VARIABLES:
+
 export GRAFANA_PASSWORD?=nutanix/4u
 export JOB_ITERATIONS?=10
 export QPS?=10
