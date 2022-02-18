@@ -15,9 +15,9 @@ b) repeatable Deployment for Workloads
 - kube-burner
 
 # Prepare Environment
-Depending on your needs you can run Logging and Workloads on dedicated or the same Cluster.
-Openshift Cluster must be fully deployed with at least one Storage Class.
 
+Openshift Cluster must be fully deployed with at least one Storage Class.
+Do not use this on a Production Cluster until you know what you are doing. Using the wrong settings you can burn down the House.
 # Setup Logging/Visualization Backend
 
 ## Needed Operators
@@ -56,10 +56,7 @@ spec:
     name: elasticsearch-es-http
 EOF
 ```
-### Get elastic User Credential
-```
-export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
-```
+
 ## Grafana
 
 ### Deploy Grafana
@@ -150,7 +147,7 @@ EOF
 
 ## Setup Workloads
 ### kube-burner
-You need the latest version from kube-burner on your Workstation:
+Download the latest Release from kube-burner on your Workstation:
 
 ```
 wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.1/kube-burner-0.15.1-Linux-x86_64.tar.gz
@@ -158,7 +155,18 @@ tar xzvf kube-burner-0.15.1-Linux-x86_64.tar.gz
 sudo install kube-burner /usr/bin
 ```
 
-### Prepare Environment
+As an alternative you can also build the latest version from scratch, this may be needed when newest features (acutal patching) is not available in latest release
+```
+git clone https://github.com/cloud-bulldozer/kube-burner.git
+sudo yum install -y make go
+cd kube-burner
+make build
+sudo install  bin/amd64/kube-burner /usr/bin
+```
+
+
+
+### Prepare Benchmark Environment
 ```
 oc new-project benchmark
 oc create sa benchmark
@@ -167,8 +175,6 @@ oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n b
 ```
 
 ## Run Test
-
-Only export esPassword when running on separate Cluster with existing value
 
 ```
 export esPassword=export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
@@ -181,17 +187,9 @@ export UUID=$(uuidgen)
 
 cd workload/(desired test)
 kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
-
 ```
 
-
-
-# Building latest kube-burner
-This may be needed when newest features (acutal patching) is not available in latest release
+After running the Workloads, clean up a little bit
 ```
-git clone https://github.com/cloud-bulldozer/kube-burner.git
-sudo yum install -y make go
-cd kube-burner
-make build
-sudo install  bin/amd64/kube-burner /usr/bin
+kube-burner destroy --uuid=${UUID}
 ```
