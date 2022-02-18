@@ -7,11 +7,15 @@ spec:
   datasources:
     - jsonData:
         tlsSkipVerify: true
+        timeField: timestamp
+        esVersion: 7.10.0
+        timeInterval: "10s"
       editable: true
       name: kube-burner
       type: elasticsearch
-      url: '${esRoute}'
+      url: 'https://${esRoute}'
       basicAuthPassword: '${esPassword}'
       basicAuth: true
       basicAuthUser: elastic
   name: elastic-grafanadatasource.yaml
+  database: 'kube-burner'
