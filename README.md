@@ -68,6 +68,9 @@ metadata:
   name: grafana
   namespace: grafana
 spec:
+  dashboardLabelSelector:
+    - matchExpressions:
+        - { key: app, operator: In, values: [grafana] }
   config:
     security:
       admin_password: nutanix/4u
@@ -85,6 +88,9 @@ Grant Grafana access to cluster-monitoring
 ```
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount -n grafana
 ```
+
+Create kube-burner Dashboard
+
 
 - Deploy Prometheus Datasource
 
@@ -144,6 +150,8 @@ spec:
 EOF
 ```  
 - Deploy Grafana Dashboards (Openshift / Kube-Burner)
+
+oc create -f environment/grafana-dashboard.yaml
 
 ## Setup Workloads
 ### kube-burner

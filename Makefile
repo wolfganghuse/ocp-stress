@@ -10,6 +10,7 @@ create_benchmark:
 	export BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
 	envsubst < environment/prometheus-grafanadatasource.yaml | oc create -f -
 	envsubst < environment/elastic-grafanadatasource.yaml | oc create -f -
+	oc create -f environment/grafana-dashboard.yaml
 	oc new-project benchmark
 	oc create sa benchmark
 	oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark

@@ -4,6 +4,9 @@ metadata:
   name: grafana
   namespace: grafana
 spec:
+  dashboardLabelSelector:
+    - matchExpressions:
+        - { key: app, operator: In, values: [grafana] }
   config:
     security:
       admin_password: ${GRAFANA_PASSWORD}
