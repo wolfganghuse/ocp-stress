@@ -168,17 +168,20 @@ oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n b
 
 ## Run Test
 
-Only export esPassword when running on separate Cluster, otherwise it is already set
+Only export esPassword when running on separate Cluster with existing value
 
 ```
-export esPassword= 
+export esPassword=export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
 export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
 export promRoute=$(oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
 export esRoute=$(oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
 export JOB_ITERATIONS=100
+export QPS=20
 export UUID=$(uuidgen)
 
-kube-burner init -c workload/cluster-density/cluster-density.yml -u https://${promRoute} -t ${promToken} --step=30s -m workload/cluster-density/metrics.yaml --uuid=${UUID} --log-level=info
+cd workload/(desired test)
+kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
+
 ```
 
 
