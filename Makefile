@@ -1,8 +1,7 @@
-export GRAFANA_PASSWORD=nutanix/4u
-export JOB_ITERATIONS=10
-export QPS=10
-#export UUID=${uuidgen}
-export UUID=7051ccec-205d-4a30-b40f-3917c7ac20ea
+export GRAFANA_PASSWORD?=nutanix/4u
+export JOB_ITERATIONS?=10
+export QPS?=10
+export UUID?=${uuidgen}
 create_benchmark:
 	oc create -f https://download.elastic.co/downloads/eck/2.0.0/crds.yaml
 	oc apply -f https://download.elastic.co/downloads/eck/2.0.0/operator.yaml
