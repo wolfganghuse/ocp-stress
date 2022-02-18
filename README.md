@@ -18,6 +18,27 @@ b) repeatable Deployment for Workloads
 
 Openshift Cluster must be fully deployed with at least one Storage Class.
 Do not use this on a Production Cluster until you know what you are doing. Using the wrong settings you can burn down the House.
+
+# Quickstart
+
+```
+wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.1/kube-burner-0.15.1-Linux-x86_64.tar.gz
+tar xzvf kube-burner-0.15.1-Linux-x86_64.tar.gz
+sudo install kube-burner /usr/bin
+```
+
+```
+make create_benchmark
+```
+
+```
+make run
+```
+
+```
+make run WORKLOAD=api-intensive JOB_ITERATIONS=50 QPS=20
+```
+
 # Setup Logging/Visualization Backend
 
 ## Needed Operators
