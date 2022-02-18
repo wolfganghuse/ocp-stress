@@ -180,3 +180,15 @@ export UUID=$(uuidgen)
 
 kube-burner init -c workload/cluster-density/cluster-density.yml -u https://${promRoute} -t ${promToken} --step=30s -m workload/cluster-density/metrics.yaml --uuid=${UUID} --log-level=info
 ```
+
+
+
+# Building latest kube-burner
+This may be needed when newest features (acutal patching) is not available in latest release
+```
+git clone https://github.com/cloud-bulldozer/kube-burner.git
+sudo yum install -y make go
+cd kube-burner
+make build
+sudo install  bin/amd64/kube-burner /usr/bin
+```
