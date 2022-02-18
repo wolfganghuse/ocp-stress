@@ -3,7 +3,7 @@ global:
   createTarball: false
   indexerConfig:
     enabled: true
-    esServers: '[https://elastic:{{ .esPassword }}@{{ .esRoute }}]'
+    esServers: [https://elastic:{{ .esPassword }}@{{ .esRoute }}]
     insecureSkipVerify: true
     defaultIndex: kube-burner
     type: elastic
