@@ -8,7 +8,7 @@ spec:
     - jsonData:
         tlsSkipVerify: true
         timeField: timestamp
-        esVersion: "7.0.0"
+        esVersion: "70"
         maxConcurrentShardRequests: 5
         timeInterval: "10s"
       editable: true
