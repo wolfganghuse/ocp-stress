@@ -31,153 +31,53 @@ sudo install kube-burner /usr/bin
 git clone https://github.com/wolfganghuse/ocp-stress
 cd ocp-stress
 ```
-
-```
-make create_benchmark
-```
-
-```
-make run
-```
-
-```
-make run WORKLOAD=api-intensive JOB_ITERATIONS=50 QPS=20
-```
+TDB
 
 # Setup Logging/Visualization Backend
 
 ## Needed Operators
-- Deploy ElasticSearch Operator
-- Deploy Grafana Operator
+### Deploy ElasticSearch Operator
+```
+oc create -f https://download.elastic.co/downloads/eck/2.0.0/crds.yaml
+oc apply -f https://download.elastic.co/downloads/eck/2.0.0/operator.yaml
+```
 
-## ElasticSearch
+### Deploy Grafana Operator
+```
+oc new-project grafana
+oc create -f environment/grafana-operator.yaml
+```
+
 ### Deploy ElasticSearch 7.12.1 with Route
 ```
 oc new-project elastic
-
-cat <<EOF | oc create -f -
-apiVersion: elasticsearch.k8s.elastic.co/v1
-kind: Elasticsearch
-metadata:
-  name: elasticsearch
-  namespace: elastic
-spec:
-  nodeSets:
-    - name: default
-      count: 1
-      config:
-        node.store.allow_mmap: false
-  version: 7.12.1
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: elasticsearch
-spec:
-  tls:
-    termination: passthrough
-    insecureEdgeTerminationPolicy: Redirect
-  to:
-    kind: Service
-    name: elasticsearch-es-http
-EOF
+oc create -f environment/elasticsearch.yaml
 ```
 
 ## Grafana
 
 ### Deploy Grafana
 ```
-cat <<EOF | oc create -f -
-apiVersion: integreatly.org/v1alpha1
-kind: Grafana
-metadata:
-  name: grafana
-  namespace: grafana
-spec:
-  dashboardLabelSelector:
-    - matchExpressions:
-        - { key: app, operator: In, values: [grafana] }
-  config:
-    security:
-      admin_password: nutanix/4u
-      admin_user: root
-    auth.basic:
-      enabled: true
-    auth:
-      disable_signout_menu: true
-  ingress:
-    enabled: true
-EOF
+envsubst < environment/grafana.yaml | oc create -f -
 ```
 
-Grant Grafana access to cluster-monitoring
+Assign Grafana Account to Cluster Monitoring
 ```
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount -n grafana
 ```
-
-Create kube-burner Dashboard
-
-
-- Deploy Prometheus Datasource
-
-Get Service Account Token
+Export needed Tokens, Password and Route
 ```
 export BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
+export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
+export esRoute=$(oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
 ```
 
+Create Datasources and Dashboard
 ```
-cat <<EOF | oc create -f -
-apiVersion: integreatly.org/v1alpha1
-kind: GrafanaDataSource
-metadata:
-  name: prometheus-grafanadatasource
-  namespace: grafana
-spec:
-  datasources:
-    - access: proxy
-      editable: true
-      isDefault: true
-      jsonData:
-        httpHeaderName1: 'Authorization'
-        timeInterval: 5s
-        tlsSkipVerify: true
-      name: Prometheus
-      secureJsonData:
-        httpHeaderValue1: 'Bearer ${BEARER_TOKEN}'
-      type: prometheus
-      url: 'https://thanos-querier.openshift-monitoring.svc.cluster.local:9091'
-  name: prometheus-grafanadatasource.yaml
-EOF
-
-```
-
-- Deploy Elastic Datasource
-
-
-```
-cat <<EOF | oc create -f -
-apiVersion: integreatly.org/v1alpha1
-kind: GrafanaDataSource
-metadata:
-  name: elastic-grafanadatasource
-  namespace: grafana
-spec:
-  datasources:
-    - jsonData:
-        tlsSkipVerify: true
-      editable: true
-      name: kube-burner
-      type: elasticsearch
-      url: 'https://elasticsearch-elastic.apps.ocp1.ntnxlab.local'
-      basicAuthPassword: ${esPassword}
-      basicAuth: true
-      basicAuthUser: elastic
-  name: elastic-grafanadatasource.yaml
-EOF
-```  
-- Deploy Grafana Dashboards (Openshift / Kube-Burner)
-
+envsubst < environment/prometheus-grafanadatasource.yaml | oc create -f -
+envsubst < environment/elastic-grafanadatasource.yaml | oc create -f -
 oc create -f environment/grafana-dashboard.yaml
+```
 
 ## Setup Workloads
 ### kube-burner
@@ -198,8 +98,6 @@ make build
 sudo install  bin/amd64/kube-burner /usr/bin
 ```
 
-
-
 ### Prepare Benchmark Environment
 ```
 oc new-project benchmark
@@ -210,15 +108,23 @@ oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n b
 
 ## Run Test
 
+Export Tokens, etc (only neccessary when running in another shell then used for installation)
 ```
 export esPassword=export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
-export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
 export promRoute=$(oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
 export esRoute=$(oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
+```
+
+Additional needed Values for running our Workload
+```
 export JOB_ITERATIONS=100
 export QPS=20
 export UUID=$(uuidgen)
+export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
+```
 
+Running the Test itself
+```
 cd workload/(desired test)
 kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
 ```
