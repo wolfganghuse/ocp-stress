@@ -2,11 +2,11 @@ export GRAFANA_PASSWORD=nutanix/4u
 
 
 create_benchmark:
-	oc new-project grafana
-	oc create -f environment/grafana-operator.yaml
 	oc new-project elastic
 	oc create -f environment/elasticsearch.yaml
 	export esPassword=$(oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
+	oc new-project grafana
+	oc create -f environment/grafana-operator.yaml
 	envsubst < environment/grafana.yaml | oc create -f -
 	oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-serviceaccount -n grafana
 	export BEARER_TOKEN=$(oc serviceaccounts get-token grafana-serviceaccount -n grafana)
