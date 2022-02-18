@@ -2,6 +2,8 @@ export GRAFANA_PASSWORD?=nutanix/4u
 export JOB_ITERATIONS?=10
 export QPS?=10
 export UUID?=${uuidgen}
+export WORKLOAD?=cluster-density
+
 create_benchmark:
 	oc create -f https://download.elastic.co/downloads/eck/2.0.0/crds.yaml
 	oc apply -f https://download.elastic.co/downloads/eck/2.0.0/operator.yaml
@@ -27,4 +29,4 @@ run:
 	promToken=$(shell oc serviceaccounts get-token benchmark -n benchmark)
 	promRoute=$(shell oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
 	esRoute=$(shell oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
-	cd workload/cluster-density/ && kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
+	cd workload/$(WORKLOAD)/ && kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
