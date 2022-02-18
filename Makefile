@@ -1,7 +1,7 @@
 export GRAFANA_PASSWORD?=nutanix/4u
 export JOB_ITERATIONS?=10
 export QPS?=10
-export UUID?=${uuidgen}
+export UUID?=${shell uuidgen}
 export WORKLOAD?=cluster-density
 
 operators:
@@ -32,8 +32,8 @@ create_benchmark:
 	oc create sa benchmark
 	oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark
 run:
-	promToken=$(shell oc serviceaccounts get-token benchmark -n benchmark)
-	promRoute=$(shell oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
-	esRoute=$(shell oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
-	esPassword=$(shell oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
+	export promToken=$(shell oc serviceaccounts get-token benchmark -n benchmark)
+	export promRoute=$(shell oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
+	export esRoute=$(shell oc get route  -n elastic elasticsearch --no-headers -o custom-columns=NAME:.spec.host)
+	export esPassword=$(shell oc get secret -n elastic elasticsearch-es-elastic-user  -o go-template='{{.data.elastic | base64decode}}')
 	cd workload/$(WORKLOAD)/ && kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
