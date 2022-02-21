@@ -85,6 +85,9 @@
   metricName: etcdVersion
   instant: true
 
+- query: sum(rate(grpc_server_started_total{job="etcd",grpc_type="unary"}[5m]))
+  metricName: etcdRPCRate
+
 # Cluster metrics
 - query: sum(kube_namespace_status_phase) by (phase) > 0
   metricName: namespaceCount
