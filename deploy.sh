@@ -1,17 +1,18 @@
-GRAFANA_PASSWORD?=nutanix/4u
-export JOB_ITERATIONS?=10
-export QPS?=10
-export UUID?=${shell uuidgen}
-export WORKLOAD?=cluster-density
+export GRAFANA_PASSWORD=nutanix/4u
+export JOB_ITERATIONS=10
+export QPS=10
+export UUID=$(uuidgen)
+export WORKLOAD=cluster-density
 
 oc create -f https://download.elastic.co/downloads/eck/2.0.0/crds.yaml
 oc apply -f https://download.elastic.co/downloads/eck/2.0.0/operator.yaml
-oc new-project grafana
-oc create -f environment/grafana-operator.yaml
-sleep 60
 
 oc new-project elastic
 oc create -f environment/elasticsearch.yaml
+sleep 60
+
+oc new-project grafana
+oc create -f environment/grafana-operator.yaml
 sleep 60
 
 envsubst < environment/grafana.yaml | oc create -f -
@@ -28,10 +29,3 @@ oc create -f environment/grafana-dashboard.yaml
 oc new-project benchmark
 oc create sa benchmark
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z benchmark -n benchmark
-exit
-
-export promToken=$(shell oc serviceaccounts get-token benchmark -n benchmark)
-export promRoute=$(shell oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host) 
-
-cd workload/$(WORKLOAD)
-kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
