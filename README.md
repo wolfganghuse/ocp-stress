@@ -21,24 +21,14 @@ Do not use this on a Production Cluster until you know what you are doing. Using
 
 # Quickstart
 
-```
-
-wget https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.15.2/kube-burner-0.15.2-Linux-x86_64.tar.gz
-tar xzvf kube-burner-0.15.2-Linux-x86_64.tar.gz
-sudo install kube-burner /usr/bin
-
-```
 
 ```
 
 git clone https://github.com/wolfganghuse/ocp-stress
 cd ocp-stress
+chmod +x *.sh
+./install.sh
 ./deploy.sh
-
-```
-
-```
-
 ./run.sh
 
 ```
