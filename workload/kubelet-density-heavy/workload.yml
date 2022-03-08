@@ -16,9 +16,10 @@ jobs:
     jobIterations: {{ .JOB_ITERATIONS}}
     qps: {{ .QPS}}
     burst: {{ .QPS}}
-    namespacedIterations: false
+    namespacedIterations: true
     namespace: kubelet-density-heavy
     waitWhenFinished: true
+    jobPause: 120s
     podWait: false
     objects:
 
