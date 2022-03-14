@@ -41,7 +41,7 @@ spec:
         securityContext:
           privileged: false
       restartPolicy: Always
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       name: perfapp-{{.Replica}}-{{.Iteration}}
