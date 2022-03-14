@@ -1,0 +1,12 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv-{{.Replica}}-{{.Iteration}}
+  labels:
+    name: postgres-pv-{{.Replica}}-{{.Iteration}}
+spec:
+  storageClassName: nutanix-volume
+  capacity:
+    storage: 100M
+  accessModes:
+    - ReadWriteOnce
