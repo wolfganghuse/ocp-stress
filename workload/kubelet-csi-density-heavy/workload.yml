@@ -19,7 +19,7 @@ jobs:
     namespacedIterations: true
     namespace: kubelet-csi-density-heavy
     waitWhenFinished: true
-    jobPause: 120s
+    jobPause: 180s
     podWait: false
     objects:
       - objectTemplate: templates/postgres-pvc.yml
@@ -28,10 +28,8 @@ jobs:
       - objectTemplate: templates/postgres-deployment.yml
         replicas: 1
 
-      - objectTemplate: templates/app-deployment.yml
-        replicas: 1
-        inputVars:
-          readinessPeriod: 10
-
       - objectTemplate: templates/postgres-service.yml
+        replicas: 1
+
+      - objectTemplate: templates/app-deployment.yml
         replicas: 1

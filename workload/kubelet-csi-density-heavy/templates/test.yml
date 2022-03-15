@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: command-demo
+  labels:
+    purpose: demonstrate-command
+spec:
+  containers:
+  - name: command-demo-container
+    image: xridge/pgbench
+    args: ["-h","postgresql-1-915","-p","5432","-i","-s","1","kubelet-density","-U","admin"]
+    env:
+    - name: PGPASSWORD
+      value: secret
+  restartPolicy: OnFailure
+
