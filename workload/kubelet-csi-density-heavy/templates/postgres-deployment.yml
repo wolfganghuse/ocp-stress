@@ -13,6 +13,10 @@ spec:
       containers:
       - name: postgresql
         image: registry.redhat.io/rhscl/postgresql-10-rhel7:latest
+        resources:
+          requests:
+            cpu: 6m
+            memory: 40Mi
         volumeMounts:
         - mountPath: /var/lib/pgsql/data
           name: postgres-pvc-{{.Replica}}-{{.Iteration}}
