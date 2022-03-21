@@ -1,4 +1,4 @@
-export JOB_ITERATIONS=50
+export JOB_ITERATIONS=10
 export QPS=20
 export WORKLOAD=cluster-density
 export UUID=$(uuidgen)
