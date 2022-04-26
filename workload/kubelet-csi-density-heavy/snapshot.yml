@@ -45,8 +45,7 @@ jobs:
     objects:
       - objectTemplate: templates/snapshot.yml
         replicas: 1
-
- - name: csi-snapshot-remove
+  - name: csi-snapshot-remove
     qps: {{ .QPS }}
     burst: {{ .QPS }}
     jobType: delete
