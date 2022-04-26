@@ -33,7 +33,7 @@ jobs:
 
       - objectTemplate: templates/app-deployment.yml
         replicas: 1
-  - name: csi-snapshot
+  - name: csi-snapshot-create
     jobIterations: {{ .JOB_ITERATIONS}}
     qps: {{ .QPS}}
     burst: {{ .QPS}}
@@ -45,3 +45,13 @@ jobs:
     objects:
       - objectTemplate: templates/snapshot.yml
         replicas: 1
+
+ - name: csi-snapshot-remove
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
+    jobType: delete
+    waitForDeletion: true
+    objects:
+      - kind: VolumeSnapshot
+        labelSelector: {kube-burner-job: csi-snapshot-create}
+        apiVersion: snapshot.storage.k8s.io/v1
