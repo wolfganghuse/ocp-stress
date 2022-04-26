@@ -40,7 +40,7 @@ jobs:
     namespacedIterations: true
     namespace: kubelet-csi-density-heavy
     waitWhenFinished: true
-    jobPause: 90s
+    jobPause: 180s
     podWait: false
     objects:
       - objectTemplate: templates/snapshot.yml
@@ -50,7 +50,18 @@ jobs:
     burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
+    jobPause: 180s
     objects:
       - kind: VolumeSnapshot
         labelSelector: {kube-burner-job: csi-snapshot-create}
         apiVersion: snapshot.storage.k8s.io/v1
+  - name: csi-pvc-remove
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
+    jobType: delete
+    waitForDeletion: true
+    jobPause: 180s
+    objects:
+      - kind: PersistentVolumeClaim
+        labelSelector: {kube-burner-job: kubelet-csi-density-heavy}
+        apiVersion: v1
