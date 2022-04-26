@@ -1,0 +1,47 @@
+global:
+  writeToFile: false
+  createTarball: false
+  indexerConfig:
+    enabled: true
+    esServers: [https://elastic:{{ .esPassword }}@{{ .esRoute }}]
+    insecureSkipVerify: true
+    defaultIndex: kube-burner
+    type: elastic
+  measurements:
+    - name: podLatency
+      esIndex: kube-burner
+
+jobs:
+  - name: kubelet-csi-density-heavy
+    jobIterations: {{ .JOB_ITERATIONS}}
+    qps: {{ .QPS}}
+    burst: {{ .QPS}}
+    namespacedIterations: true
+    namespace: kubelet-csi-density-heavy
+    waitWhenFinished: true
+    jobPause: 90s
+    podWait: false
+    objects:
+      - objectTemplate: templates/postgres-pvc.yml
+        replicas: 1
+
+      - objectTemplate: templates/postgres-deployment.yml
+        replicas: 1
+
+      - objectTemplate: templates/postgres-service.yml
+        replicas: 1
+
+      - objectTemplate: templates/app-deployment.yml
+        replicas: 1
+  - name: csi-snapshot
+    jobIterations: {{ .JOB_ITERATIONS}}
+    qps: {{ .QPS}}
+    burst: {{ .QPS}}
+    namespacedIterations: true
+    namespace: kubelet-csi-density-heavy
+    waitWhenFinished: true
+    jobPause: 90s
+    podWait: false
+    objects:
+      - objectTemplate: templates/snapshot.yml
+        replicas: 1
