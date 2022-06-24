@@ -1,0 +1,56 @@
+global:
+  writeToFile: false
+  createTarball: false
+  indexerConfig:
+    enabled: true
+    esServers: [https://elastic:{{ .esPassword }}@{{ .esRoute }}]
+    insecureSkipVerify: true
+    defaultIndex: kube-burner
+    type: elastic
+  measurements:
+    - name: podLatency
+      esIndex: kube-burner
+
+jobs:
+  - name: cluster-density-e2e
+    jobIterations: {{ .JOB_ITERATIONS }}
+    qps: {{ .QPS }}
+    burst: {{ .QPS }}
+    namespacedIterations: true
+    namespace: cluster-density
+    podWait: false
+    waitFor: []
+    waitWhenFinished: true
+    objects:
+
+      - objectTemplate: imagestream.yml
+        replicas: 1
+        inputVars:
+          prefix: cluster-density
+
+      - objectTemplate: build.yml
+        replicas: 1
+        inputVars:
+          prefix: cluster-density
+
+      - objectTemplate: deployment.yml
+        replicas: 5
+        inputVars:
+          podReplicas: 2
+          name: cluster-density
+
+      - objectTemplate: service.yml
+        replicas: 5
+        inputVars:
+          name: cluster-density
+        
+      - objectTemplate: route.yml
+        replicas: 1
+        inputVars:
+          name: cluster-density
+
+      - objectTemplate: secret.yml
+        replicas: 10
+
+      - objectTemplate: configmap.yml
+        replicas: 10
