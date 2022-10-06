@@ -22,6 +22,11 @@ jobs:
     cleanup: true
     waitFor: []
     waitWhenFinished: true
+    namespaceLabels:
+      security.openshift.io/scc.podSecurityLabelSync: false
+      pod-security.kubernetes.io/enforce: privileged
+      pod-security.kubernetes.io/audit: privileged
+      pod-security.kubernetes.io/warn: privileged
     objects:
       - objectTemplate: templates/deployment.yaml
         replicas: 1
@@ -37,6 +42,11 @@ jobs:
     jobIterations: 10
     qps: {{ .QPS }}
     burst: {{ .QPS }}
+    namespaceLabels:
+      security.openshift.io/scc.podSecurityLabelSync: false
+      pod-security.kubernetes.io/enforce: privileged
+      pod-security.kubernetes.io/audit: privileged
+      pod-security.kubernetes.io/warn: privileged
     objects:
       - kind: Deployment
         objectTemplate: templates/deployment_patch_add_label.json
@@ -59,6 +69,11 @@ jobs:
     burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
+    namespaceLabels:
+      security.openshift.io/scc.podSecurityLabelSync: false
+      pod-security.kubernetes.io/enforce: privileged
+      pod-security.kubernetes.io/audit: privileged
+      pod-security.kubernetes.io/warn: privileged
     objects:
       - kind: Deployment
         labelSelector: {kube-burner-job: api-intensive}
@@ -69,6 +84,11 @@ jobs:
     burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
+    namespaceLabels:
+      security.openshift.io/scc.podSecurityLabelSync: false
+      pod-security.kubernetes.io/enforce: privileged
+      pod-security.kubernetes.io/audit: privileged
+      pod-security.kubernetes.io/warn: privileged
     objects:
       - kind: Pod
         labelSelector: {kube-burner-job: api-intensive}
@@ -78,6 +98,11 @@ jobs:
     burst: {{ .QPS }}
     jobType: delete
     waitForDeletion: true
+    namespaceLabels:
+      security.openshift.io/scc.podSecurityLabelSync: false
+      pod-security.kubernetes.io/enforce: privileged
+      pod-security.kubernetes.io/audit: privileged
+      pod-security.kubernetes.io/warn: privileged
     objects:
       - kind: Service
         labelSelector: {kube-burner-job: api-intensive}
@@ -86,6 +111,11 @@ jobs:
     qps: {{ .QPS }}
     burst: {{ .QPS }}
     jobType: delete
+    namespaceLabels:
+      security.openshift.io/scc.podSecurityLabelSync: false
+      pod-security.kubernetes.io/enforce: privileged
+      pod-security.kubernetes.io/audit: privileged
+      pod-security.kubernetes.io/warn: privileged
     objects:
       - kind: ConfigMap
         labelSelector: {kube-burner-job: api-intensive}
