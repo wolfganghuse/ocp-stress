@@ -11,6 +11,8 @@ spec:
     security:
       admin_password: ${GRAFANA_PASSWORD}
       admin_user: root
+    auth.anonymous:
+      enabled: true
     auth.basic:
       enabled: true
     auth:
