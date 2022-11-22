@@ -8,6 +8,6 @@ export esRoute=$(oc get route  -n elastic elasticsearch --no-headers -o custom-c
 export esServer=https://elastic:$esPassword@$esRoute
 
 export promRoute=$(oc get route  -n openshift-monitoring prometheus-k8s --no-headers -o custom-columns=NAME:.spec.host)
-export promToken=$(oc serviceaccounts get-token benchmark -n benchmark)
+export promToken=$(oc create token benchmark -n benchmark)
 cd workload/${WORKLOAD}
 kube-burner init -c workload.yml -u https://${promRoute} -t ${promToken} --step=30s -m metrics.yaml --uuid=${UUID} --log-level=info
