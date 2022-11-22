@@ -4,8 +4,8 @@ export QPS=10
 export UUID=$(uuidgen)
 export WORKLOAD=cluster-density
 
-oc create -f https://download.elastic.co/downloads/eck/2.0.0/crds.yaml
-oc apply -f https://download.elastic.co/downloads/eck/2.0.0/operator.yaml
+oc create -f https://download.elastic.co/downloads/eck/2.5.0/crds.yaml
+oc apply -f https://download.elastic.co/downloads/eck/2.5.0/operator.yaml
 
 oc new-project elastic
 oc create -f environment/elasticsearch.yaml
