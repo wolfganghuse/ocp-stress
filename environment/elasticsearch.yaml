@@ -5,19 +5,19 @@ metadata:
   namespace: elastic
 spec:
   nodeSets:
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Ti
     - name: default
       count: 3
       config:
         node.store.allow_mmap: false
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Ti
   version: 7.12.1
 ---
 apiVersion: route.openshift.io/v1
